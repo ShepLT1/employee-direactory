@@ -15,14 +15,139 @@ function Directory() {
       .catch(err => console.log(err))
   }, []);
 
-  // Write function that searches by employee lastname based on input's state
+  const sortNames = (array) => {
+    if (array.length <= 1) {
+      return array;
+    }
+
+    // get random pivot element (and remove from array to add back in later)
+    let pivot = array.splice(Math.floor(Math.random() * array.length), 1);
+
+    // create left array (elements <= pivot), and right array (elements > pivot)
+    let left = [];
+    let right = [];
+
+    array.forEach(function (el) {
+      if (el.name.last <= pivot[0].name.last) {
+        left.push(el);
+      }
+      else {
+        right.push(el);
+      }
+    });
+
+    // get the result of recursively sorting the left array (using quicksort), then join that with the pivot and the
+    // result of recursively sorting the right array (using quicksort).
+    // equivalent of `return quicksort(left) + pivot + quicksort (right);` in the pseudocode
+    return sortNames(left).concat(pivot, sortNames(right));
+  }
+
+  const sortPhones = (array) => {
+    if (array.length <= 1) {
+      return array;
+    }
+
+    // get random pivot element (and remove from array to add back in later)
+    let pivot = array.splice(Math.floor(Math.random() * array.length), 1);
+
+    // create left array (elements <= pivot), and right array (elements > pivot)
+    let left = [];
+    let right = [];
+
+    array.forEach(function (el) {
+      if (el.phone <= pivot[0].phone) {
+        left.push(el);
+      }
+      else {
+        right.push(el);
+      }
+    });
+
+    // get the result of recursively sorting the left array (using quicksort), then join that with the pivot and the
+    // result of recursively sorting the right array (using quicksort).
+    // equivalent of `return quicksort(left) + pivot + quicksort (right);` in the pseudocode
+    return sortPhones(left).concat(pivot, sortPhones(right));
+  }
+
+  const sortEmails = (array) => {
+    if (array.length <= 1) {
+      return array;
+    }
+
+    // get random pivot element (and remove from array to add back in later)
+    let pivot = array.splice(Math.floor(Math.random() * array.length), 1);
+
+    // create left array (elements <= pivot), and right array (elements > pivot)
+    let left = [];
+    let right = [];
+
+    array.forEach(function (el) {
+      if (el.email <= pivot[0].email) {
+        left.push(el);
+      }
+      else {
+        right.push(el);
+      }
+    });
+
+    // get the result of recursively sorting the left array (using quicksort), then join that with the pivot and the
+    // result of recursively sorting the right array (using quicksort).
+    // equivalent of `return quicksort(left) + pivot + quicksort (right);` in the pseudocode
+    return sortEmails(left).concat(pivot, sortEmails(right));
+  }
+
+  const sortDOB = (array) => {
+    if (array.length <= 1) {
+      return array;
+    }
+
+    // get random pivot element (and remove from array to add back in later)
+    let pivot = array.splice(Math.floor(Math.random() * array.length), 1);
+
+    // create left array (elements <= pivot), and right array (elements > pivot)
+    let left = [];
+    let right = [];
+
+    array.forEach(function (el) {
+      if (el.dob.date <= pivot[0].dob.date) {
+        left.push(el);
+      }
+      else {
+        right.push(el);
+      }
+    });
+
+    return sortDOB(left).concat(pivot, sortDOB(right));
+  }
+
+  const binarySearch = (items, value) => {
+    var startIndex = 0,
+      stopIndex = items.length - 1,
+      middle = Math.floor((stopIndex + startIndex) / 2);
+
+    while (items[middle] !== value && startIndex < stopIndex) {
+
+      //adjust search area
+      if (value < items[middle]) {
+        stopIndex = middle - 1;
+      } else if (value > items[middle]) {
+        startIndex = middle + 1;
+      }
+
+      //recalculate middle
+      middle = Math.floor((stopIndex + startIndex) / 2);
+    }
+
+    //make sure it's the right value
+    return (items[middle] !== value) ? -1 : middle;
+  }
 
   const handleInputChange = event => {
     const { value } = event.target;
     console.log(value);
     setSearchState(value);
 
-    // Run function from line 18
+    // run binary search to see if searchState matches any of the names in employees; function should only look at the first 'x' amount of letters in the last name, with 'x' equal to searchState.length
   };
 
   const formatDOB = (date) => {
@@ -37,16 +162,16 @@ function Directory() {
     console.log(sortParam);
     switch (sortParam) {
       case "name":
-        // sort by name into new array & setEmployees equal to new array
+        setEmployees(sortNames(employees))
         break;
       case "phone":
-        // sort by phone into new array & setEmployees equal to new array
+        setEmployees(sortPhones(employees))
         break;
       case "email":
-        // sort by email into new array & setEmployees equal to new array
+        setEmployees(sortEmails(employees))
         break;
       case "dob":
-        // sort by dob into new array & setEmployees equal to new array
+        setEmployees(sortDOB(employees))
         break;
       default:
         return
