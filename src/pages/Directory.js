@@ -6,12 +6,16 @@ import API from "../util/API";
 
 function Directory() {
 
-  const [searchState, setSearchState] = useState("");
   const [employees, setEmployees] = useState([]);
+  const [allEmployees, setAllEmployees] = useState([]);
 
   useEffect(() => {
     API.getEmployees()
-      .then(res => setEmployees(res.data.results.slice(0, 10)))
+      .then(res => {
+        let employeeList = res.data.results.slice(0, 10)
+        setEmployees(employeeList);
+        setAllEmployees(employeeList);
+      })
       .catch(err => console.log(err))
   }, []);
 
@@ -120,34 +124,18 @@ function Directory() {
     return sortDOB(left).concat(pivot, sortDOB(right));
   }
 
-  const binarySearch = (items, value) => {
-    var startIndex = 0,
-      stopIndex = items.length - 1,
-      middle = Math.floor((stopIndex + startIndex) / 2);
-
-    while (items[middle] !== value && startIndex < stopIndex) {
-
-      //adjust search area
-      if (value < items[middle]) {
-        stopIndex = middle - 1;
-      } else if (value > items[middle]) {
-        startIndex = middle + 1;
-      }
-
-      //recalculate middle
-      middle = Math.floor((stopIndex + startIndex) / 2);
-    }
-
-    //make sure it's the right value
-    return (items[middle] !== value) ? -1 : middle;
-  }
-
   const handleInputChange = event => {
     const { value } = event.target;
-    console.log(value);
-    setSearchState(value);
+    const filteredList = employees.filter(item => {
+      let employeeLast = item.name.last.toLowerCase()
+      return employeeLast.indexOf(value.toLowerCase()) !== -1;
+    })
+    setEmployees(filteredList);
 
-    // run binary search to see if searchState matches any of the names in employees; function should only look at the first 'x' amount of letters in the last name, with 'x' equal to searchState.length
+    if (value === "") {
+      setEmployees(allEmployees);
+      console.log(employees);
+    }
   };
 
   const formatDOB = (date) => {
@@ -184,14 +172,13 @@ function Directory() {
       <Row>
         <Col size="md-12">
           <h1>Employee Directory</h1>
-          <h4>Click on carrots to filter by heading or use the search box to narrow your results</h4>
+          <h4>Click on colomn titles to filter or use the search box to narrow your results</h4>
         </Col>
       </Row>
       <Row>
         <Col size="md-12">
           <form>
             <Input
-              value={searchState}
               onChange={handleInputChange}
               name="search"
               placeholder="Search by last name"
@@ -209,7 +196,7 @@ function Directory() {
                   return (
                     <EmployeeListItem
                       key={employee.phone}
-                      thumbnail={employee.picture.thumbnail}
+                      image={employee.picture.large}
                       firstName={employee.name.first}
                       lastName={employee.name.last}
                       phone={employee.phone}
